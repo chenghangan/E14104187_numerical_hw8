@@ -1,0 +1,17 @@
+# 定義冪函數
+def power_func(x, b, n):
+    return b * (x**n)
+
+# 使用curve_fit進行擬合
+params, covariance = curve_fit(power_func, x, y, p0=[1, 2])
+
+b, n = params
+
+# 計算誤差
+y_pred = power_func(x, b, n)
+error = np.sum((y - y_pred)**2)
+
+print("\n1c. 冪形式最小平方逼近結果:")
+print(f"參數: b = {b:.4f}, n = {n:.4f}")
+print(f"誤差: {error:.4f}")
+print(f"擬合方程: y = {b:.4f}x^{n:.4f}")
