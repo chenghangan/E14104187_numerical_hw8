@@ -1,0 +1,47 @@
+from scipy.integrate import quad
+
+# 定義目標函數
+def f(x):
+    return 0.5 * np.cos(x) + 0.25 * np.sin(2*x)
+
+# 定義基函數
+def phi0(x):
+    return 1
+
+def phi1(x):
+    return x
+
+def phi2(x):
+    return x**2
+
+# 計算內積
+def inner_product(f, g, a=-1, b=1):
+    return quad(lambda x: f(x)*g(x), a, b)[0]
+
+# 構建正規方程
+A = np.array([
+    [inner_product(phi0, phi0), inner_product(phi0, phi1), inner_product(phi0, phi2)],
+    [inner_product(phi1, phi0), inner_product(phi1, phi1), inner_product(phi1, phi2)],
+    [inner_product(phi2, phi0), inner_product(phi2, phi1), inner_product(phi2, phi2)]
+])
+
+b = np.array([
+    inner_product(f, phi0),
+    inner_product(f, phi1),
+    inner_product(f, phi2)
+])
+
+# 解方程
+coefficients = solve(A, b)
+a0, a1, a2 = coefficients
+
+# 計算誤差平方積分
+def error_squared(x):
+    return (f(x) - (a0 + a1*x + a2*x**2))**2
+
+error = quad(error_squared, -1, 1)[0]
+
+print("\n問題2結果:")
+print(f"多項式係數: a0 = {a0:.6f}, a1 = {a1:.6f}, a2 = {a2:.6f}")
+print(f"誤差平方積分: {error:.6f}")
+print(f"擬合多項式: P(x) = {a0:.6f} + {a1:.6f}x + {a2:.6f}x²")
