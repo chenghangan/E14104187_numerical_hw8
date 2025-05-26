@@ -1,0 +1,59 @@
+import numpy as np
+from numpy.linalg import solve
+from scipy.optimize import curve_fit
+from scipy.integrate import quad
+
+# 1. 給定數據
+x = np.array([4.0, 4.2, 4.5, 4.7, 5.1, 5.5, 5.9, 6.3])
+y = np.array([102.6, 113.2, 130.1, 142.1, 167.5, 195.1, 224.9, 256.8])
+
+print("=== 問題1 ===")
+
+# 1a. 二次最小平方逼近 y = ax² + bx + c
+print("\n1a. 二次最小平方逼近:")
+n = len(x)
+sum_x = np.sum(x)
+sum_x2 = np.sum(x**2)
+sum_x3 = np.sum(x**3)
+sum_x4 = np.sum(x**4)
+sum_y = np.sum(y)
+sum_xy = np.sum(x*y)
+sum_x2y = np.sum(x**2 * y)
+
+A = np.array([[sum_x4, sum_x3, sum_x2],
+              [sum_x3, sum_x2, sum_x],
+              [sum_x2, sum_x, n]])
+b = np.array([sum_x2y, sum_xy, sum_y])
+
+a, b, c = solve(A, b)
+y_pred = a * x**2 + b * x + c
+error = np.sum((y - y_pred)**2)
+
+print(f"擬合方程: y = {a:.4f}x² + {b:.4f}x + {c:.4f}")
+print(f"誤差: {error:.4f}")
+
+# 1b. 指數形式 be^{ax}
+print("\n1b. 指數形式逼近:")
+def exp_func(x, a, b):
+    return b * np.exp(a * x)
+
+params, _ = curve_fit(exp_func, x, y, p0=[0.1, 100])
+a, b = params
+y_pred = exp_func(x, a, b)
+error = np.sum((y - y_pred)**2)
+
+print(f"擬合方程: y = {b:.4f}e^{a:.4f}x")
+print(f"誤差: {error:.4f}")
+
+# 1c. 冪形式 bx^n
+print("\n1c. 冪形式逼近:")
+def power_func(x, b, n):
+    return b * (x**n)
+
+params, _ = curve_fit(power_func, x, y, p0=[1, 2])
+b, n = params
+y_pred = power_func(x, b, n)
+error = np.sum((y - y_pred)**2)
+
+print(f"擬合方程: y = {b:.4f}x^{n:.4f}")
+print(f"誤差: {error:.4f}")
