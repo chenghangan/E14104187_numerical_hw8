@@ -1,0 +1,44 @@
+# 3. 對 f(x) = x²sinx 構造 S₄
+print("\n=== 問題3 ===")
+
+def f(x):
+    return x**2 * np.sin(x)
+
+m = 16
+x_points = np.linspace(0, 1, 2*m)
+y_points = f(x_points)
+z_points = np.pi * (2 * (x_points - 0) / (1 - 0) - np.pi
+
+# 3a. 計算 S₄ 係數
+n = 4
+a0 = np.sum(y_points) / m
+
+a_coeffs = [np.sum(y_points * np.cos(k*z_points)) / m for k in range(1, n)]
+b_coeffs = [np.sum(y_points * np.sin(k*z_points)) / m for k in range(1, n)]
+a_n = np.sum(y_points * np.cos(n*z_points)) / m
+
+print("\n3a. S₄ 係數:")
+print(f"a0 = {a0:.6f}")
+print(f"a係數: {[f'{a:.6f}' for a in a_coeffs]}")
+print(f"b係數: {[f'{b:.6f}' for b in b_coeffs]}")
+print(f"a{n} = {a_n:.6f}")
+
+# 3b. 計算 ∫₀¹ S₄(x)dx
+def S4(x):
+    z = np.pi * (2 * (x - 0) / (1 - 0) - np.pi)
+    sum_part = sum(a*np.cos((k+1)*z) + b*np.sin((k+1)*z) 
+                 for k, (a, b) in enumerate(zip(a_coeffs, b_coeffs)))
+    return 0.5*a0 + a_n*np.cos(n*z) + sum_part
+
+integral_S4 = quad(S4, 0, 1)[0]
+
+# 3c. 比較 ∫₀¹ x²sinx dx
+integral_f = quad(f, 0, 1)[0]
+
+# 3d. 計算誤差
+error = np.sum((y_points - S4(x_points))**2
+
+print("\n3b. ∫₀¹ S₄(x)dx =", f"{integral_S4:.6f}")
+print("3c. ∫₀¹ x²sinx dx =", f"{integral_f:.6f}")
+print("   絕對誤差:", f"{abs(integral_f - integral_S4):.6f}")
+print("3d. 誤差 E(S₄) =", f"{error:.6f}")
