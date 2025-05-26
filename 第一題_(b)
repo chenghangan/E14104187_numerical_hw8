@@ -1,0 +1,19 @@
+from scipy.optimize import curve_fit
+
+# 定義指數函數
+def exponential_func(x, a, b):
+    return b * np.exp(a * x)
+
+# 使用curve_fit進行擬合
+params, covariance = curve_fit(exponential_func, x, y, p0=[0.1, 100])
+
+a, b = params
+
+# 計算誤差
+y_pred = exponential_func(x, a, b)
+error = np.sum((y - y_pred)**2)
+
+print("\n1b. 指數形式最小平方逼近結果:")
+print(f"參數: a = {a:.4f}, b = {b:.4f}")
+print(f"誤差: {error:.4f}")
+print(f"擬合方程: y = {b:.4f}e^{a:.4f}x")
